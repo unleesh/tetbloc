@@ -61,7 +61,7 @@ function GameContent() {
     // 모든 타겟 셀이 채워졌는지 확인
     const allTargetsFilled = pattern.targetCells.every(targetCell => {
       // 이 타겟 셀을 차지하는 조각이 있는지 확인
-      for (const piece of placedPieces.values()) {
+      for (const piece of Array.from(placedPieces.values())) {
         const isOccupied = piece.shape.some(
           cell =>
             cell.row + piece.position.row === targetCell.row &&

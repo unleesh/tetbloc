@@ -132,7 +132,7 @@ export default function GameBoard({
   }, [pattern.targetCells]);
 
   const getCellPiece = useCallback((row: number, col: number): BlockPiece | null => {
-    for (const piece of placedPieces.values()) {
+    for (const piece of Array.from(placedPieces.values())) {
       const isOccupied = piece.shape.some(
         (cell) =>
           cell.row + piece.position.row === row &&
