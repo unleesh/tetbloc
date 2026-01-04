@@ -2,17 +2,22 @@
 
 import React, { useCallback } from 'react';
 import { BlockPiece } from '@/types/game';
-import { useDrag } from '@/app/page';
 
 interface PieceSelectorProps {
   pieces: BlockPiece[];
   onPieceSelect: (piece: BlockPiece) => void;
+  draggedPiece: BlockPiece | null;
+  setDraggedPiece: (piece: BlockPiece | null) => void;
 }
 
 const CELL_SIZE = 30;
 
-export default function PieceSelector({ pieces, onPieceSelect }: PieceSelectorProps) {
-  const { draggedPiece, setDraggedPiece } = useDrag();
+export default function PieceSelector({ 
+  pieces, 
+  onPieceSelect,
+  draggedPiece,
+  setDraggedPiece 
+}: PieceSelectorProps) {
 
   const handleMouseDown = useCallback((piece: BlockPiece) => {
     console.log('🎯 Piece grabbed:', piece.id);

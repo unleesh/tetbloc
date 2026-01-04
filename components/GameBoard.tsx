@@ -2,13 +2,14 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { BlockPattern, BlockPiece, Position } from '@/types/game';
-import { useDrag } from '@/app/page';
 
 interface GameBoardProps {
   pattern: BlockPattern;
   placedPieces: Map<string, BlockPiece>;
   onPieceDrop: (piece: BlockPiece, position: Position) => void;
   onPieceReturn: (piece: BlockPiece) => void;
+  draggedPiece: BlockPiece | null;
+  setDraggedPiece: (piece: BlockPiece | null) => void;
 }
 
 const CELL_SIZE = 40;
@@ -18,10 +19,11 @@ export default function GameBoard({
   placedPieces,
   onPieceDrop,
   onPieceReturn,
+  draggedPiece,
+  setDraggedPiece,
 }: GameBoardProps) {
   const [dragOverCell, setDragOverCell] = useState<Position | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
-  const { draggedPiece, setDraggedPiece } = useDrag();
 
   // 드래그 중인 조각이 차지할 모든 셀 계산
   const getDragPreviewCells = useCallback((baseRow: number, baseCol: number): Position[] => {

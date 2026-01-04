@@ -1,23 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import GameBoard from '@/components/GameBoard';
 import PieceSelector from '@/components/PieceSelector';
 import { BlockPattern, BlockPiece, Position } from '@/types/game';
 import { LEVEL_PATTERNS } from '@/data/patterns';
-
-// Global drag state context
-interface DragContextType {
-  draggedPiece: BlockPiece | null;
-  setDraggedPiece: (piece: BlockPiece | null) => void;
-}
-
-const DragContext = createContext<DragContextType>({
-  draggedPiece: null,
-  setDraggedPiece: () => {},
-});
-
-const useDrag = () => useContext(DragContext);
 
 function GameContent() {
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -208,9 +195,8 @@ function GameContent() {
   };
 
   return (
-    <DragContext.Provider value={{ draggedPiece, setDraggedPiece }}>
-      <main className="min-h-screen bg-gradient-to-br from-amber-100 to-orange-200 p-4">
-        <div className="max-w-6xl mx-auto">
+    <main className="min-h-screen bg-gradient-to-br from-amber-100 to-orange-200 p-4">
+      <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
             <div className="flex justify-between items-center">
@@ -235,6 +221,8 @@ function GameContent() {
             placedPieces={placedPieces}
             onPieceDrop={handlePieceDrop}
             onPieceReturn={handlePieceReturn}
+            draggedPiece={draggedPiece}
+            setDraggedPiece={setDraggedPiece}
           />
 
           {/* Piece Selector */}
@@ -243,6 +231,8 @@ function GameContent() {
             onPieceSelect={(piece) => {
               console.log('Piece selected:', piece.id);
             }}
+            draggedPiece={draggedPiece}
+            setDraggedPiece={setDraggedPiece}
           />
 
           {/* Completion Modal */}
@@ -284,7 +274,6 @@ function GameContent() {
           )}
         </div>
       </main>
-    </DragContext.Provider>
   );
 }
 
