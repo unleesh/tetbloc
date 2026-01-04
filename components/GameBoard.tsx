@@ -352,10 +352,17 @@ export default function GameBoard({
   return (
     <div 
       className="bg-white rounded-lg shadow-lg p-6 mb-4"
+      onTouchStart={(e) => {
+        console.log('📍 [Container] Touch START on GameBoard container');
+      }}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      style={{ 
+        minHeight: '400px',
+        touchAction: draggedPiece ? 'none' : 'auto'
+      }}
     >
       <div className="flex justify-center">
         <div
