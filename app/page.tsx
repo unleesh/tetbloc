@@ -15,6 +15,32 @@ function GameContent() {
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [draggedPiece, setDraggedPiece] = useState<BlockPiece | null>(null);
+  const [touchPosition, setTouchPosition] = useState<{ x: number; y: number } | null>(null);
+
+  // Global touch move handler for floating preview
+  useEffect(() => {
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (draggedPiece && e.touches[0]) {
+        const touch = e.touches[0];
+        setTouchPosition({ x: touch.clientX, y: touch.clientY });
+        e.preventDefault();
+      }
+    };
+
+    const handleGlobalTouchEnd = () => {
+      setTouchPosition(null);
+    };
+
+    if (draggedPiece) {
+      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
+      document.addEventListener('touchend', handleGlobalTouchEnd);
+    }
+
+    return () => {
+      document.removeEventListener('touchmove', handleGlobalTouchMove);
+      document.removeEventListener('touchend', handleGlobalTouchEnd);
+    };
+  }, [draggedPiece]);
 
   // 타이머
   useEffect(() => {
@@ -273,6 +299,50 @@ function GameContent() {
                     </button>
                   )}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Floating piece preview for touch drag */}
+          {draggedPiece && touchPosition && (
+            <div
+              style={{
+                position: 'fixed',
+                left: touchPosition.x,
+                top: touchPosition.y,
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: 'none',
+                zIndex: 9999,
+                opacity: 0.85,
+                filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))',
+              }}
+            >
+              <div
+                className="grid gap-0"
+                style={{
+                  gridTemplateColumns: `repeat(${Math.max(...draggedPiece.shape.map(c => c.col)) + 1}, 40px)`,
+                  gridTemplateRows: `repeat(${Math.max(...draggedPiece.shape.map(c => c.row)) + 1}, 40px)`,
+                }}
+              >
+                {Array.from({ length: Math.max(...draggedPiece.shape.map(c => c.row)) + 1 }, (_, row) =>
+                  Array.from({ length: Math.max(...draggedPiece.shape.map(c => c.col)) + 1 }, (_, col) => {
+                    const hasCell = draggedPiece.shape.some(
+                      (cell) => cell.row === row && cell.col === col
+                    );
+                    return (
+                      <div
+                        key={`float-${row}-${col}`}
+                        className={`border-2 ${hasCell ? 'border-white' : 'border-transparent'} rounded`}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          backgroundColor: hasCell ? draggedPiece.color : 'transparent',
+                          boxShadow: hasCell ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
+                        }}
+                      />
+                    );
+                  })
+                )}
               </div>
             </div>
           )}
