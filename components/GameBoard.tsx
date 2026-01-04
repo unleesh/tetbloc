@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { BlockPattern, BlockPiece, Position } from '@/types/game';
 
 interface GameBoardProps {
@@ -24,6 +24,25 @@ export default function GameBoard({
 }: GameBoardProps) {
   const [dragOverCell, setDragOverCell] = useState<Position | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
+
+  // Add non-passive touch listener to board for preventDefault
+  useEffect(() => {
+    const boardElement = boardRef.current;
+    if (!boardElement) return;
+
+    const handleBoardTouchMove = (e: TouchEvent) => {
+      if (draggedPiece) {
+        e.preventDefault(); // Prevent scrolling when dragging
+      }
+    };
+
+    // Non-passive listener only on the board area
+    boardElement.addEventListener('touchmove', handleBoardTouchMove, { passive: false });
+    
+    return () => {
+      boardElement.removeEventListener('touchmove', handleBoardTouchMove);
+    };
+  }, [draggedPiece]);
 
   // 드래그 중인 조각이 차지할 모든 셀 계산
   const getDragPreviewCells = useCallback((baseRow: number, baseCol: number): Position[] => {
@@ -112,7 +131,7 @@ export default function GameBoard({
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!draggedPiece) return;
     
-    e.preventDefault(); // Prevent scrolling
+    // preventDefault is handled by native listener now
     
     if (!boardRef.current) return;
     
@@ -156,7 +175,7 @@ export default function GameBoard({
   }, [draggedPiece, pattern.gridSize]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
+    // preventDefault handled by native listener
     
     console.log('👆 Touch end - draggedPiece:', draggedPiece?.id, 'dragOverCell:', dragOverCell);
     

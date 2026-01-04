@@ -23,6 +23,7 @@ function GameContent() {
       if (draggedPiece && e.touches[0]) {
         const touch = e.touches[0];
         setTouchPosition({ x: touch.clientX, y: touch.clientY });
+        // Don't preventDefault here - let it be passive for better scroll performance
       }
     };
 
@@ -37,11 +38,11 @@ function GameContent() {
     };
 
     if (draggedPiece) {
-      // Remove passive:true to allow preventDefault in child components
-      document.addEventListener('touchmove', handleGlobalTouchMove);
-      document.addEventListener('touchend', handleGlobalEnd);
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalEnd);
+      // Use passive listeners for global tracking (doesn't block scrolling)
+      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
+      document.addEventListener('touchend', handleGlobalEnd, { passive: true });
+      document.addEventListener('mousemove', handleGlobalMouseMove, { passive: true });
+      document.addEventListener('mouseup', handleGlobalEnd, { passive: true });
     }
 
     return () => {
