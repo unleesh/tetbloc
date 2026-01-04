@@ -17,28 +17,37 @@ function GameContent() {
   const [draggedPiece, setDraggedPiece] = useState<BlockPiece | null>(null);
   const [touchPosition, setTouchPosition] = useState<{ x: number; y: number } | null>(null);
 
-  // Global touch move handler for floating preview
+  // Global touch/mouse move handler for floating preview
   useEffect(() => {
     const handleGlobalTouchMove = (e: TouchEvent) => {
       if (draggedPiece && e.touches[0]) {
         const touch = e.touches[0];
         setTouchPosition({ x: touch.clientX, y: touch.clientY });
-        // Don't prevent default here - let board handle it
       }
     };
 
-    const handleGlobalTouchEnd = () => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (draggedPiece) {
+        setTouchPosition({ x: e.clientX, y: e.clientY });
+      }
+    };
+
+    const handleGlobalEnd = () => {
       setTouchPosition(null);
     };
 
     if (draggedPiece) {
       document.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
-      document.addEventListener('touchend', handleGlobalTouchEnd, { passive: true });
+      document.addEventListener('touchend', handleGlobalEnd, { passive: true });
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalEnd);
     }
 
     return () => {
       document.removeEventListener('touchmove', handleGlobalTouchMove);
-      document.removeEventListener('touchend', handleGlobalTouchEnd);
+      document.removeEventListener('touchend', handleGlobalEnd);
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalEnd);
     };
   }, [draggedPiece]);
 

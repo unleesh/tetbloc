@@ -136,6 +136,26 @@ export default function GameBoard({
     }
   }, [draggedPiece, pattern.gridSize]);
 
+  // Mouse move handler for desktop
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!draggedPiece || !boardRef.current) return;
+    
+    const boardRect = boardRef.current.getBoundingClientRect();
+    const x = e.clientX - boardRect.left;
+    const y = e.clientY - boardRect.top;
+    
+    const col = Math.floor(x / CELL_SIZE);
+    const row = Math.floor(y / CELL_SIZE);
+    
+    console.log('🖱️ Mouse move:', { row, col });
+    
+    if (row >= 0 && row < pattern.gridSize.rows && col >= 0 && col < pattern.gridSize.cols) {
+      setDragOverCell({ row, col });
+    } else {
+      setDragOverCell(null);
+    }
+  }, [draggedPiece, pattern.gridSize]);
+
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -158,6 +178,34 @@ export default function GameBoard({
     console.log('👆 Is valid placement:', isValidPlacement(dragOverCell.row, dragOverCell.col));
     
     // Try to place the piece
+    if (isValidPlacement(dragOverCell.row, dragOverCell.col)) {
+      console.log('✅ Placing piece');
+      onPieceDrop(draggedPiece, dragOverCell);
+    } else {
+      console.log('❌ Invalid placement - canceling drag');
+    }
+    
+    setDragOverCell(null);
+    setDraggedPiece(null);
+  }, [draggedPiece, dragOverCell, onPieceDrop, isValidPlacement, setDraggedPiece]);
+
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    console.log('🖱️ Mouse up - draggedPiece:', draggedPiece?.id, 'dragOverCell:', dragOverCell);
+    
+    if (!draggedPiece) {
+      setDragOverCell(null);
+      return;
+    }
+    
+    if (!dragOverCell) {
+      console.log('🖱️ Mouse up outside board - canceling drag');
+      setDragOverCell(null);
+      setDraggedPiece(null);
+      return;
+    }
+    
+    console.log('🖱️ Mouse up at:', dragOverCell.row, dragOverCell.col);
+    
     if (isValidPlacement(dragOverCell.row, dragOverCell.col)) {
       console.log('✅ Placing piece');
       onPieceDrop(draggedPiece, dragOverCell);
@@ -271,6 +319,8 @@ export default function GameBoard({
       className="bg-white rounded-lg shadow-lg p-6 mb-4"
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <div className="flex justify-center">
         <div

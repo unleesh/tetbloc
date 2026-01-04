@@ -73,19 +73,18 @@ export default function PieceSelector({
     return (
       <div
         key={piece.id}
-        draggable={true}
         onMouseDown={() => handleMouseDown(piece)}
         onTouchStart={(e) => handleTouchStart(e, piece)}
-        onDragStart={(e) => handleDragStart(e, piece)}
-        onDragEnd={handleDragEnd}
         className={`
           inline-block cursor-grab active:cursor-grabbing 
           hover:scale-110 active:scale-95 transition-all
           p-3 bg-gradient-to-br from-gray-50 to-gray-100 
           rounded-xl border-2 border-gray-300 
           hover:border-blue-400 hover:shadow-lg
+          select-none touch-none
           ${isBeingDragged ? 'opacity-50 scale-90' : ''}
         `}
+        style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'none' }}
         onClick={() => onPieceSelect(piece)}
       >
         <div
