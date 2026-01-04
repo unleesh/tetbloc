@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import { BlockPiece } from '@/types/game';
 
 interface PieceSelectorProps {
@@ -20,6 +20,27 @@ export default function PieceSelector({
   setDraggedPiece,
   setTouchPosition
 }: PieceSelectorProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Add non-passive touch listener to prevent scrolling when selecting pieces
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleContainerTouchStart = (e: TouchEvent) => {
+      // Check if touch is on a piece (not on empty space)
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-piece-id]')) {
+        e.preventDefault(); // Prevent scrolling when touching a piece
+      }
+    };
+
+    container.addEventListener('touchstart', handleContainerTouchStart, { passive: false });
+    
+    return () => {
+      container.removeEventListener('touchstart', handleContainerTouchStart);
+    };
+  }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, piece: BlockPiece) => {
     console.log('🎯 Piece grabbed:', piece.id);
@@ -31,8 +52,8 @@ export default function PieceSelector({
 
   const handleTouchStart = useCallback((e: React.TouchEvent, piece: BlockPiece) => {
     console.log('👆 Touch started:', piece.id);
-    e.preventDefault(); // Prevent scrolling while dragging
-    e.stopPropagation();
+    // preventDefault is handled by native listener now
+    // Don't call stopPropagation either
     
     // Set dragged piece AND initial touch position
     setDraggedPiece(piece);
@@ -83,6 +104,7 @@ export default function PieceSelector({
     return (
       <div
         key={piece.id}
+        data-piece-id={piece.id}
         onMouseDown={(e) => handleMouseDown(e, piece)}
         onTouchStart={(e) => handleTouchStart(e, piece)}
         className={`
@@ -129,7 +151,7 @@ export default function PieceSelector({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4" style={{ touchAction: 'pan-x pan-y' }}>
+    <div ref={containerRef} className="bg-white rounded-lg shadow-lg p-4" style={{ touchAction: 'pan-x pan-y' }}>
       <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
         <span>사용 가능한 조각</span>
         <span className="text-sm font-normal text-blue-600">({pieces.length}개)</span>
