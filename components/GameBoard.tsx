@@ -108,9 +108,49 @@ export default function GameBoard({
     onPieceDrop(draggedPiece, { row, col });
   }, [draggedPiece, onPieceDrop]);
 
+  // Touch handlers for mobile/tablet
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!draggedPiece || !boardRef.current) return;
+    
+    const touch = e.touches[0];
+    const boardRect = boardRef.current.getBoundingClientRect();
+    
+    // Calculate which cell the touch is over
+    const x = touch.clientX - boardRect.left;
+    const y = touch.clientY - boardRect.top;
+    
+    const col = Math.floor(x / 40); // CELL_SIZE = 40
+    const row = Math.floor(y / 40);
+    
+    if (row >= 0 && row < pattern.gridSize.rows && col >= 0 && col < pattern.gridSize.cols) {
+      setDragOverCell({ row, col });
+    }
+  }, [draggedPiece, pattern.gridSize]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!draggedPiece || !boardRef.current || !dragOverCell) {
+      setDragOverCell(null);
+      return;
+    }
+    
+    console.log('👆 Touch ended at:', dragOverCell.row, dragOverCell.col);
+    
+    onPieceDrop(draggedPiece, dragOverCell);
+    setDragOverCell(null);
+  }, [draggedPiece, dragOverCell, onPieceDrop]);
+
   const handlePieceMouseDown = useCallback((piece: BlockPiece, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('🎯 Piece grabbed from board:', piece.id);
+    
+    // 보드에서 조각을 제거하고 드래그 시작
+    onPieceReturn(piece);
+    setDraggedPiece(piece);
+  }, [onPieceReturn, setDraggedPiece]);
+
+  const handlePieceTouchStart = useCallback((piece: BlockPiece, e: React.TouchEvent) => {
+    e.stopPropagation();
+    console.log('👆 Piece touched on board:', piece.id);
     
     // 보드에서 조각을 제거하고 드래그 시작
     onPieceReturn(piece);
@@ -172,6 +212,7 @@ export default function GameBoard({
         onDragLeave={handleDragLeave}
         onDrop={(e) => handleDrop(e, row, col)}
         onMouseDown={(e) => piece && handlePieceMouseDown(piece, e)}
+        onTouchStart={(e) => piece && handlePieceTouchStart(piece, e)}
         onClick={(e) => piece && handlePieceClick(piece, e)}
       >
         {piece && (
@@ -206,7 +247,10 @@ export default function GameBoard({
           style={{
             gridTemplateColumns: `repeat(${pattern.gridSize.cols}, ${CELL_SIZE}px)`,
             gridTemplateRows: `repeat(${pattern.gridSize.rows}, ${CELL_SIZE}px)`,
+            touchAction: 'none', // Prevent default touch actions
           }}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {Array.from({ length: pattern.gridSize.rows }, (_, row) =>
             Array.from({ length: pattern.gridSize.cols }, (_, col) =>

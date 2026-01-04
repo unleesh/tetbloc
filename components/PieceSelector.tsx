@@ -24,6 +24,12 @@ export default function PieceSelector({
     setDraggedPiece(piece);
   }, [setDraggedPiece]);
 
+  const handleTouchStart = useCallback((e: React.TouchEvent, piece: BlockPiece) => {
+    console.log('👆 Touch started:', piece.id);
+    e.preventDefault(); // Prevent scrolling while dragging
+    setDraggedPiece(piece);
+  }, [setDraggedPiece]);
+
   const handleDragStart = useCallback((e: React.DragEvent, piece: BlockPiece) => {
     console.log('🚀 Drag started:', piece.id);
     setDraggedPiece(piece);
@@ -66,6 +72,7 @@ export default function PieceSelector({
         key={piece.id}
         draggable={true}
         onMouseDown={() => handleMouseDown(piece)}
+        onTouchStart={(e) => handleTouchStart(e, piece)}
         onDragStart={(e) => handleDragStart(e, piece)}
         onDragEnd={handleDragEnd}
         className={`
