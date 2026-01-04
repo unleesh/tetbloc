@@ -361,7 +361,6 @@ function GameContent() {
                           boxShadow: hasCell ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
                           pointerEvents: 'none',
                         }}
-                        }}
                       />
                     );
                   })
