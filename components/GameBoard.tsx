@@ -110,9 +110,12 @@ export default function GameBoard({
 
   // Touch handlers for mobile/tablet
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!draggedPiece || !boardRef.current) return;
+    if (!draggedPiece) return;
     
     e.preventDefault(); // Prevent scrolling
+    e.stopPropagation();
+    
+    if (!boardRef.current) return;
     
     const touch = e.touches[0];
     const boardRect = boardRef.current.getBoundingClientRect();
@@ -124,6 +127,8 @@ export default function GameBoard({
     const col = Math.floor(x / CELL_SIZE);
     const row = Math.floor(y / CELL_SIZE);
     
+    console.log('👆 Touch move:', { row, col, x, y });
+    
     if (row >= 0 && row < pattern.gridSize.rows && col >= 0 && col < pattern.gridSize.cols) {
       setDragOverCell({ row, col });
     } else {
@@ -133,6 +138,9 @@ export default function GameBoard({
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('👆 Touch end - draggedPiece:', draggedPiece?.id, 'dragOverCell:', dragOverCell);
     
     if (!draggedPiece) {
       setDragOverCell(null);
@@ -147,9 +155,11 @@ export default function GameBoard({
     }
     
     console.log('👆 Touch ended at:', dragOverCell.row, dragOverCell.col);
+    console.log('👆 Is valid placement:', isValidPlacement(dragOverCell.row, dragOverCell.col));
     
     // Try to place the piece
     if (isValidPlacement(dragOverCell.row, dragOverCell.col)) {
+      console.log('✅ Placing piece');
       onPieceDrop(draggedPiece, dragOverCell);
     } else {
       console.log('❌ Invalid placement - canceling drag');
@@ -257,7 +267,11 @@ export default function GameBoard({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+    <div 
+      className="bg-white rounded-lg shadow-lg p-6 mb-4"
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex justify-center">
         <div
           ref={boardRef}
@@ -269,8 +283,6 @@ export default function GameBoard({
             gridTemplateRows: `repeat(${pattern.gridSize.rows}, ${CELL_SIZE}px)`,
             touchAction: 'none', // Prevent default touch actions
           }}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
         >
           {Array.from({ length: pattern.gridSize.rows }, (_, row) =>
             Array.from({ length: pattern.gridSize.cols }, (_, col) =>

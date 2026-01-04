@@ -23,7 +23,7 @@ function GameContent() {
       if (draggedPiece && e.touches[0]) {
         const touch = e.touches[0];
         setTouchPosition({ x: touch.clientX, y: touch.clientY });
-        e.preventDefault();
+        // Don't prevent default here - let board handle it
       }
     };
 
@@ -32,8 +32,8 @@ function GameContent() {
     };
 
     if (draggedPiece) {
-      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
-      document.addEventListener('touchend', handleGlobalTouchEnd);
+      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
+      document.addEventListener('touchend', handleGlobalTouchEnd, { passive: true });
     }
 
     return () => {
