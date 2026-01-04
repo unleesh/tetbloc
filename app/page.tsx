@@ -273,6 +273,7 @@ function GameContent() {
             }}
             draggedPiece={draggedPiece}
             setDraggedPiece={setDraggedPiece}
+            setTouchPosition={setTouchPosition}
           />
 
           {/* Completion Modal */}

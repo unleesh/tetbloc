@@ -8,6 +8,7 @@ interface PieceSelectorProps {
   onPieceSelect: (piece: BlockPiece) => void;
   draggedPiece: BlockPiece | null;
   setDraggedPiece: (piece: BlockPiece | null) => void;
+  setTouchPosition: (pos: { x: number; y: number } | null) => void;
 }
 
 const CELL_SIZE = 30;
@@ -16,22 +17,31 @@ export default function PieceSelector({
   pieces, 
   onPieceSelect,
   draggedPiece,
-  setDraggedPiece 
+  setDraggedPiece,
+  setTouchPosition
 }: PieceSelectorProps) {
 
-  const handleMouseDown = useCallback((piece: BlockPiece) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent, piece: BlockPiece) => {
     console.log('🎯 Piece grabbed:', piece.id);
     setDraggedPiece(piece);
-  }, [setDraggedPiece]);
+    
+    // Set initial mouse position for floating preview
+    setTouchPosition({ x: e.clientX, y: e.clientY });
+  }, [setDraggedPiece, setTouchPosition]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent, piece: BlockPiece) => {
     console.log('👆 Touch started:', piece.id);
     e.preventDefault(); // Prevent scrolling while dragging
     e.stopPropagation();
     
-    // Just set as dragged - don't remove from available yet
+    // Set dragged piece AND initial touch position
     setDraggedPiece(piece);
-  }, [setDraggedPiece]);
+    
+    // Set initial touch position for floating preview
+    if (e.touches[0]) {
+      setTouchPosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    }
+  }, [setDraggedPiece, setTouchPosition]);
 
   const handleDragStart = useCallback((e: React.DragEvent, piece: BlockPiece) => {
     console.log('🚀 Drag started:', piece.id);
@@ -73,7 +83,7 @@ export default function PieceSelector({
     return (
       <div
         key={piece.id}
-        onMouseDown={() => handleMouseDown(piece)}
+        onMouseDown={(e) => handleMouseDown(e, piece)}
         onTouchStart={(e) => handleTouchStart(e, piece)}
         className={`
           inline-block cursor-grab active:cursor-grabbing 
