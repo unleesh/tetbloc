@@ -233,8 +233,7 @@ function GameContent() {
             pieces={availablePieces}
             onPieceSelect={(piece) => {
               console.log('Piece selected:', piece.id);
-              // Remove from available pieces when selected for touch drag
-              setAvailablePieces(availablePieces.filter(p => p.id !== piece.id));
+              // Don't remove piece here - it will be removed when successfully placed
             }}
             draggedPiece={draggedPiece}
             setDraggedPiece={setDraggedPiece}

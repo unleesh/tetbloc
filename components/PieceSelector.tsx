@@ -29,11 +29,9 @@ export default function PieceSelector({
     e.preventDefault(); // Prevent scrolling while dragging
     e.stopPropagation();
     
-    // Remove from available pieces
-    onPieceSelect(piece);
-    // Set as dragged
+    // Just set as dragged - don't remove from available yet
     setDraggedPiece(piece);
-  }, [setDraggedPiece, onPieceSelect]);
+  }, [setDraggedPiece]);
 
   const handleDragStart = useCallback((e: React.DragEvent, piece: BlockPiece) => {
     console.log('🚀 Drag started:', piece.id);

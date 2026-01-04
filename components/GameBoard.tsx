@@ -140,8 +140,7 @@ export default function GameBoard({
     }
     
     if (!dragOverCell) {
-      console.log('👆 Touch ended outside board - returning piece');
-      onPieceReturn(draggedPiece);
+      console.log('👆 Touch ended outside board - canceling drag');
       setDragOverCell(null);
       setDraggedPiece(null);
       return;
@@ -153,13 +152,12 @@ export default function GameBoard({
     if (isValidPlacement(dragOverCell.row, dragOverCell.col)) {
       onPieceDrop(draggedPiece, dragOverCell);
     } else {
-      console.log('❌ Invalid placement - returning piece');
-      onPieceReturn(draggedPiece);
+      console.log('❌ Invalid placement - canceling drag');
     }
     
     setDragOverCell(null);
     setDraggedPiece(null);
-  }, [draggedPiece, dragOverCell, onPieceDrop, onPieceReturn, isValidPlacement, setDraggedPiece]);
+  }, [draggedPiece, dragOverCell, onPieceDrop, isValidPlacement, setDraggedPiece]);
 
   const handlePieceMouseDown = useCallback((piece: BlockPiece, e: React.MouseEvent) => {
     e.stopPropagation();
