@@ -22,22 +22,27 @@ function GameContent() {
     const handleGlobalTouchMove = (e: TouchEvent) => {
       if (draggedPiece && e.touches[0]) {
         const touch = e.touches[0];
-        setTouchPosition({ x: touch.clientX, y: touch.clientY });
-        // Don't preventDefault here - let it be passive for better scroll performance
+        const pos = { x: touch.clientX, y: touch.clientY };
+        setTouchPosition(pos);
+        console.log('🌐 [Global] Touch move - updating position:', pos);
       }
     };
 
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (draggedPiece) {
-        setTouchPosition({ x: e.clientX, y: e.clientY });
+        const pos = { x: e.clientX, y: e.clientY };
+        setTouchPosition(pos);
+        console.log('🌐 [Global] Mouse move - updating position:', pos);
       }
     };
 
     const handleGlobalEnd = () => {
+      console.log('🌐 [Global] Touch/Mouse END - clearing position');
       setTouchPosition(null);
     };
 
     if (draggedPiece) {
+      console.log('🌐 [Global] Adding global listeners for piece:', draggedPiece.id);
       // Use passive listeners for global tracking (doesn't block scrolling)
       document.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
       document.addEventListener('touchend', handleGlobalEnd, { passive: true });
@@ -46,6 +51,9 @@ function GameContent() {
     }
 
     return () => {
+      if (draggedPiece) {
+        console.log('🌐 [Global] Removing global listeners');
+      }
       document.removeEventListener('touchmove', handleGlobalTouchMove);
       document.removeEventListener('touchend', handleGlobalEnd);
       document.removeEventListener('mousemove', handleGlobalMouseMove);

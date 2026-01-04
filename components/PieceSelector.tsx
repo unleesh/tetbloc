@@ -23,24 +23,30 @@ export default function PieceSelector({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, piece: BlockPiece) => {
-    console.log('🎯 Piece grabbed:', piece.id);
+    console.log('🖱️ [PieceSelector] Mouse DOWN:', piece.id);
     setDraggedPiece(piece);
     
     // Set initial mouse position for floating preview
     setTouchPosition({ x: e.clientX, y: e.clientY });
+    console.log('🖱️ [PieceSelector] Initial position set:', { x: e.clientX, y: e.clientY });
   }, [setDraggedPiece, setTouchPosition]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent, piece: BlockPiece) => {
-    console.log('👆 Touch started:', piece.id);
-    // preventDefault is handled by native listener now
-    // Don't call stopPropagation either
+    console.log('👆 [PieceSelector] Touch START:', piece.id);
+    console.log('👆 [PieceSelector] Touch event:', {
+      touches: e.touches.length,
+      clientX: e.touches[0]?.clientX,
+      clientY: e.touches[0]?.clientY
+    });
     
     // Set dragged piece AND initial touch position
     setDraggedPiece(piece);
     
     // Set initial touch position for floating preview
     if (e.touches[0]) {
-      setTouchPosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      const pos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      setTouchPosition(pos);
+      console.log('👆 [PieceSelector] Initial touch position set:', pos);
     }
   }, [setDraggedPiece, setTouchPosition]);
 

@@ -110,11 +110,19 @@ export default function GameBoard({
 
   // Touch handlers for mobile/tablet
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!draggedPiece) return;
+    console.log('👆 [GameBoard] Touch MOVE event received');
     
-    // preventDefault is handled by native listener now
+    if (!draggedPiece) {
+      console.log('❌ [GameBoard] No dragged piece');
+      return;
+    }
     
-    if (!boardRef.current) return;
+    console.log('✅ [GameBoard] Dragged piece:', draggedPiece.id);
+    
+    if (!boardRef.current) {
+      console.log('❌ [GameBoard] No board ref');
+      return;
+    }
     
     const touch = e.touches[0];
     const boardRect = boardRef.current.getBoundingClientRect();
@@ -126,11 +134,24 @@ export default function GameBoard({
     const col = Math.floor(x / CELL_SIZE);
     const row = Math.floor(y / CELL_SIZE);
     
-    console.log('👆 Touch move:', { row, col, x, y });
+    console.log('👆 [GameBoard] Touch position:', { 
+      touchX: touch.clientX, 
+      touchY: touch.clientY,
+      boardLeft: boardRect.left,
+      boardTop: boardRect.top,
+      relativeX: x,
+      relativeY: y,
+      row, 
+      col,
+      gridRows: pattern.gridSize.rows,
+      gridCols: pattern.gridSize.cols
+    });
     
     if (row >= 0 && row < pattern.gridSize.rows && col >= 0 && col < pattern.gridSize.cols) {
+      console.log('✅ [GameBoard] Setting dragOverCell:', { row, col });
       setDragOverCell({ row, col });
     } else {
+      console.log('⚠️ [GameBoard] Touch outside grid, clearing dragOverCell');
       setDragOverCell(null);
     }
   }, [draggedPiece, pattern.gridSize]);
@@ -156,35 +177,41 @@ export default function GameBoard({
   }, [draggedPiece, pattern.gridSize]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    // preventDefault handled by native listener
-    
-    console.log('👆 Touch end - draggedPiece:', draggedPiece?.id, 'dragOverCell:', dragOverCell);
+    console.log('👆 [GameBoard] Touch END event received');
+    console.log('👆 [GameBoard] Current state:', {
+      draggedPiece: draggedPiece?.id,
+      dragOverCell: dragOverCell
+    });
     
     if (!draggedPiece) {
+      console.log('❌ [GameBoard] No dragged piece on touch end');
       setDragOverCell(null);
       return;
     }
     
     if (!dragOverCell) {
-      console.log('👆 Touch ended outside board - canceling drag');
+      console.log('⚠️ [GameBoard] Touch ended outside board - canceling drag');
       setDragOverCell(null);
       setDraggedPiece(null);
       return;
     }
     
-    console.log('👆 Touch ended at:', dragOverCell.row, dragOverCell.col);
-    console.log('👆 Is valid placement:', isValidPlacement(dragOverCell.row, dragOverCell.col));
+    console.log('👆 [GameBoard] Touch ended at:', dragOverCell.row, dragOverCell.col);
+    
+    const isValid = isValidPlacement(dragOverCell.row, dragOverCell.col);
+    console.log('👆 [GameBoard] Is valid placement:', isValid);
     
     // Try to place the piece
-    if (isValidPlacement(dragOverCell.row, dragOverCell.col)) {
-      console.log('✅ Placing piece');
+    if (isValid) {
+      console.log('✅ [GameBoard] Calling onPieceDrop');
       onPieceDrop(draggedPiece, dragOverCell);
     } else {
-      console.log('❌ Invalid placement - canceling drag');
+      console.log('❌ [GameBoard] Invalid placement - canceling drag');
     }
     
     setDragOverCell(null);
     setDraggedPiece(null);
+    console.log('👆 [GameBoard] Cleared dragOverCell and draggedPiece');
   }, [draggedPiece, dragOverCell, onPieceDrop, isValidPlacement, setDraggedPiece]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
