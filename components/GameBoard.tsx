@@ -25,6 +25,11 @@ export default function GameBoard({
   const [dragOverCell, setDragOverCell] = useState<Position | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
+  // Debug: Log dragOverCell changes
+  useEffect(() => {
+    console.log('🎨 [GameBoard] dragOverCell changed:', dragOverCell);
+  }, [dragOverCell]);
+
   // 드래그 중인 조각이 차지할 모든 셀 계산
   const getDragPreviewCells = useCallback((baseRow: number, baseCol: number): Position[] => {
     if (!draggedPiece) return [];
@@ -296,6 +301,11 @@ export default function GameBoard({
     const previewCells = dragOverCell ? getDragPreviewCells(dragOverCell.row, dragOverCell.col) : [];
     const isInPreview = previewCells.some(p => p.row === row && p.col === col);
     const isValidDrop = dragOverCell ? isValidPlacement(dragOverCell.row, dragOverCell.col) : false;
+
+    // Debug: Log preview state for cells in preview
+    if (isInPreview) {
+      console.log(`🎨 [renderCell] Cell (${row},${col}) in preview - valid: ${isValidDrop}`);
+    }
 
     return (
       <div
