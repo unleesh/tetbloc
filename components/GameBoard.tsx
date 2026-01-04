@@ -25,25 +25,6 @@ export default function GameBoard({
   const [dragOverCell, setDragOverCell] = useState<Position | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
-  // Add non-passive touch listener to board for preventDefault
-  useEffect(() => {
-    const boardElement = boardRef.current;
-    if (!boardElement) return;
-
-    const handleBoardTouchMove = (e: TouchEvent) => {
-      if (draggedPiece) {
-        e.preventDefault(); // Prevent scrolling when dragging
-      }
-    };
-
-    // Non-passive listener only on the board area
-    boardElement.addEventListener('touchmove', handleBoardTouchMove, { passive: false });
-    
-    return () => {
-      boardElement.removeEventListener('touchmove', handleBoardTouchMove);
-    };
-  }, [draggedPiece]);
-
   // 드래그 중인 조각이 차지할 모든 셀 계산
   const getDragPreviewCells = useCallback((baseRow: number, baseCol: number): Position[] => {
     if (!draggedPiece) return [];

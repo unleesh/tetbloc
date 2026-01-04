@@ -22,26 +22,6 @@ export default function PieceSelector({
 }: PieceSelectorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Add non-passive touch listener to prevent scrolling when selecting pieces
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleContainerTouchStart = (e: TouchEvent) => {
-      // Check if touch is on a piece (not on empty space)
-      const target = e.target as HTMLElement;
-      if (target.closest('[data-piece-id]')) {
-        e.preventDefault(); // Prevent scrolling when touching a piece
-      }
-    };
-
-    container.addEventListener('touchstart', handleContainerTouchStart, { passive: false });
-    
-    return () => {
-      container.removeEventListener('touchstart', handleContainerTouchStart);
-    };
-  }, []);
-
   const handleMouseDown = useCallback((e: React.MouseEvent, piece: BlockPiece) => {
     console.log('🎯 Piece grabbed:', piece.id);
     setDraggedPiece(piece);
