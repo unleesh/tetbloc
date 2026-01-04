@@ -17,7 +17,7 @@ const DragContext = createContext<DragContextType>({
   setDraggedPiece: () => {},
 });
 
-export const useDrag = () => useContext(DragContext);
+const useDrag = () => useContext(DragContext);
 
 function GameContent() {
   const [currentLevel, setCurrentLevel] = useState(0);
