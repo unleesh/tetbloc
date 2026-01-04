@@ -103,4 +103,3 @@ block-puzzle-game/
 - [ ] 사운드 효과
 - [ ] 애니메이션 효과
 - [ ] 모바일 터치 최적화
-# tetbloc
