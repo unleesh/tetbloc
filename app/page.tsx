@@ -195,7 +195,10 @@ function GameContent() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-amber-100 to-orange-200 p-4">
+    <main 
+      className="min-h-screen bg-gradient-to-br from-amber-100 to-orange-200 p-4"
+      style={{ touchAction: 'pan-y pinch-zoom' }}
+    >
       <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
@@ -230,6 +233,8 @@ function GameContent() {
             pieces={availablePieces}
             onPieceSelect={(piece) => {
               console.log('Piece selected:', piece.id);
+              // Remove from available pieces when selected for touch drag
+              setAvailablePieces(availablePieces.filter(p => p.id !== piece.id));
             }}
             draggedPiece={draggedPiece}
             setDraggedPiece={setDraggedPiece}

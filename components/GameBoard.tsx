@@ -112,6 +112,8 @@ export default function GameBoard({
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!draggedPiece || !boardRef.current) return;
     
+    e.preventDefault(); // Prevent scrolling
+    
     const touch = e.touches[0];
     const boardRect = boardRef.current.getBoundingClientRect();
     
@@ -119,25 +121,45 @@ export default function GameBoard({
     const x = touch.clientX - boardRect.left;
     const y = touch.clientY - boardRect.top;
     
-    const col = Math.floor(x / 40); // CELL_SIZE = 40
-    const row = Math.floor(y / 40);
+    const col = Math.floor(x / CELL_SIZE);
+    const row = Math.floor(y / CELL_SIZE);
     
     if (row >= 0 && row < pattern.gridSize.rows && col >= 0 && col < pattern.gridSize.cols) {
       setDragOverCell({ row, col });
+    } else {
+      setDragOverCell(null);
     }
   }, [draggedPiece, pattern.gridSize]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!draggedPiece || !boardRef.current || !dragOverCell) {
+    e.preventDefault();
+    
+    if (!draggedPiece) {
       setDragOverCell(null);
+      return;
+    }
+    
+    if (!dragOverCell) {
+      console.log('👆 Touch ended outside board - returning piece');
+      onPieceReturn(draggedPiece);
+      setDragOverCell(null);
+      setDraggedPiece(null);
       return;
     }
     
     console.log('👆 Touch ended at:', dragOverCell.row, dragOverCell.col);
     
-    onPieceDrop(draggedPiece, dragOverCell);
+    // Try to place the piece
+    if (isValidPlacement(dragOverCell.row, dragOverCell.col)) {
+      onPieceDrop(draggedPiece, dragOverCell);
+    } else {
+      console.log('❌ Invalid placement - returning piece');
+      onPieceReturn(draggedPiece);
+    }
+    
     setDragOverCell(null);
-  }, [draggedPiece, dragOverCell, onPieceDrop]);
+    setDraggedPiece(null);
+  }, [draggedPiece, dragOverCell, onPieceDrop, onPieceReturn, isValidPlacement, setDraggedPiece]);
 
   const handlePieceMouseDown = useCallback((piece: BlockPiece, e: React.MouseEvent) => {
     e.stopPropagation();

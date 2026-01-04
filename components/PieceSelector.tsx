@@ -27,8 +27,13 @@ export default function PieceSelector({
   const handleTouchStart = useCallback((e: React.TouchEvent, piece: BlockPiece) => {
     console.log('👆 Touch started:', piece.id);
     e.preventDefault(); // Prevent scrolling while dragging
+    e.stopPropagation();
+    
+    // Remove from available pieces
+    onPieceSelect(piece);
+    // Set as dragged
     setDraggedPiece(piece);
-  }, [setDraggedPiece]);
+  }, [setDraggedPiece, onPieceSelect]);
 
   const handleDragStart = useCallback((e: React.DragEvent, piece: BlockPiece) => {
     console.log('🚀 Drag started:', piece.id);
@@ -117,13 +122,13 @@ export default function PieceSelector({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4">
+    <div className="bg-white rounded-lg shadow-lg p-4" style={{ touchAction: 'pan-x pan-y' }}>
       <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
         <span>사용 가능한 조각</span>
         <span className="text-sm font-normal text-blue-600">({pieces.length}개)</span>
       </h3>
       
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" style={{ touchAction: 'pan-x' }}>
         <div className="flex gap-4 pb-2 min-w-max">
           {pieces.length > 0 ? (
             pieces.map((piece) => renderPiece(piece))
