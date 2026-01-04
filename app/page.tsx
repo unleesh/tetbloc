@@ -342,6 +342,7 @@ function GameContent() {
                 style={{
                   gridTemplateColumns: `repeat(${Math.max(...draggedPiece.shape.map(c => c.col)) + 1}, 40px)`,
                   gridTemplateRows: `repeat(${Math.max(...draggedPiece.shape.map(c => c.row)) + 1}, 40px)`,
+                  pointerEvents: 'none',
                 }}
               >
                 {Array.from({ length: Math.max(...draggedPiece.shape.map(c => c.row)) + 1 }, (_, row) =>
@@ -358,6 +359,8 @@ function GameContent() {
                           height: 40,
                           backgroundColor: hasCell ? draggedPiece.color : 'transparent',
                           boxShadow: hasCell ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
+                          pointerEvents: 'none',
+                        }}
                         }}
                       />
                     );
