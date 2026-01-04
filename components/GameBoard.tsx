@@ -361,7 +361,7 @@ export default function GameBoard({
       onMouseUp={handleMouseUp}
       style={{ 
         minHeight: '400px',
-        touchAction: draggedPiece ? 'none' : 'auto'
+        touchAction: 'none',  // Always prevent touch scrolling on board
       }}
     >
       <div className="flex justify-center">
