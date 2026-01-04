@@ -313,13 +313,22 @@ export default function GameBoard({
         className={`
           border border-gray-300 relative transition-all
           ${isTarget ? 'bg-amber-100' : 'bg-white'}
-          ${isInPreview && isValidDrop ? 'ring-2 ring-green-500 bg-green-100' : ''}
-          ${isInPreview && !isValidDrop ? 'ring-2 ring-red-500 bg-red-100' : ''}
           ${piece ? 'cursor-grab hover:opacity-80' : ''}
         `}
         style={{
           width: CELL_SIZE,
           height: CELL_SIZE,
+          // Strong inline styles for preview feedback
+          ...(isInPreview && isValidDrop ? {
+            backgroundColor: '#dcfce7',
+            border: '3px solid #22c55e',
+            boxShadow: '0 0 10px rgba(34, 197, 94, 0.5)',
+          } : {}),
+          ...(isInPreview && !isValidDrop ? {
+            backgroundColor: '#fee2e2',
+            border: '3px solid #ef4444',
+            boxShadow: '0 0 10px rgba(239, 68, 68, 0.5)',
+          } : {}),
         }}
         onDragOver={(e) => handleDragOver(e, row, col)}
         onDragLeave={handleDragLeave}
