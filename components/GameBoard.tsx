@@ -113,7 +113,6 @@ export default function GameBoard({
     if (!draggedPiece) return;
     
     e.preventDefault(); // Prevent scrolling
-    e.stopPropagation();
     
     if (!boardRef.current) return;
     
@@ -158,7 +157,6 @@ export default function GameBoard({
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     
     console.log('👆 Touch end - draggedPiece:', draggedPiece?.id, 'dragOverCell:', dragOverCell);
     

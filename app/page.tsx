@@ -37,8 +37,9 @@ function GameContent() {
     };
 
     if (draggedPiece) {
-      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
-      document.addEventListener('touchend', handleGlobalEnd, { passive: true });
+      // Remove passive:true to allow preventDefault in child components
+      document.addEventListener('touchmove', handleGlobalTouchMove);
+      document.addEventListener('touchend', handleGlobalEnd);
       document.addEventListener('mousemove', handleGlobalMouseMove);
       document.addEventListener('mouseup', handleGlobalEnd);
     }
